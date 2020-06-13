@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    container_name: exam_db
+    ports:
+      - "15432:5432"
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres1234
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - backend
+
+volumes:
+  db-data:
+
+networks:
+  backend:
