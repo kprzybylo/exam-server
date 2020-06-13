@@ -1,0 +1,23 @@
+spring:
+  contextPath: /api
+
+  datasource:
+    url: jdbc:postgresql://localhost:15432/postgres
+    username: postgres
+    password: postgres1234
+
+  jpa:
+    properties.hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate.ddl-auto: none
+    show-sql: true
+
+  flyway:
+    url: jdbc:postgresql://localhost:15432/postgres
+    user: postgres
+    password: postgres1234
+    locations: classpath:/db/migration
+
+app.config:
+  jwt:
+    secret: secret
+    expirationTime: 86400000
