@@ -10,10 +10,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 
-@NoArgsConstructor
-@Getter
-@Setter
-@Entity
+@Entity(name = "SECURITY_USER")
 @Table(name = "APP_USER")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 class User implements UserDetails {
@@ -21,10 +18,7 @@ class User implements UserDetails {
     @GeneratedValue
     Long id;
 
-    String firstName;
-    String lastName;
-
-    String password;
+    @Getter String password;
 
     String email;
 

@@ -23,14 +23,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         httpSecurity
                 .csrf().disable()
                 .authorizeRequests()
-                    .antMatchers("/api/login").permitAll()
-                    .anyRequest().authenticated()
                 .and()
                 .logout()
-                    .permitAll()
+                .permitAll()
                 .and()
                 .sessionManagement()
-                    .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
                 .addFilterAt(jsonAuthenticationRequestFilter(), UsernamePasswordAuthenticationFilter.class);
@@ -55,7 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public JwtAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+    public JwtAuthenticationFilter jwtAuthenticationFilter() {
         return new JwtAuthenticationFilter(
                 userDetailsService(), jwtService());
     }
@@ -63,7 +61,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public JsonAuthenticationRequestFilter jsonAuthenticationRequestFilter() throws Exception {
         JsonAuthenticationRequestFilter jsonAuthenticationRequestFilter = new JsonAuthenticationRequestFilter();
-        jsonAuthenticationRequestFilter.setFilterProcessesUrl("/api/login");
         jsonAuthenticationRequestFilter.setAuthenticationSuccessHandler(restAuthenticationSuccessHandler());
         jsonAuthenticationRequestFilter.setAuthenticationFailureHandler(new SimpleUrlAuthenticationFailureHandler());
         jsonAuthenticationRequestFilter.setAuthenticationManager(authenticationManager());

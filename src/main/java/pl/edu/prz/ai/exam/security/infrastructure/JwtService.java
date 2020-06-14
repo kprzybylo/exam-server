@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
@@ -22,15 +23,19 @@ class JwtService {
     @Value("${app.config.jwt.expirationTime}")
     Long expirationTime;
 
-    final LoadingCache<String, String> jwtCache = CacheBuilder.newBuilder()
-            .expireAfterWrite(expirationTime, TimeUnit.MILLISECONDS)
-            .build(new CacheLoader<String, String>() {
-                @Override
-                public String load(String key) throws Exception {
-                    return jwtCache.get(key);
-                }
-            });
+    LoadingCache<String, String> jwtCache;
 
+    @PostConstruct
+    public void initializeCache() {
+         this.jwtCache = CacheBuilder.newBuilder()
+                .expireAfterWrite(expirationTime, TimeUnit.MILLISECONDS)
+                .build(new CacheLoader<>() {
+                    @Override
+                    public String load(String key) throws Exception {
+                        return jwtCache.get(key);
+                    }
+                });
+    }
 
     public String getTokenForUser(UserDetails userDetails) throws IllegalArgumentException, JWTCreationException {
         String token = JWT.create()
