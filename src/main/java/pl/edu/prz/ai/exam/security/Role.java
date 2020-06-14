@@ -12,15 +12,11 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-@NoArgsConstructor
-@Getter
-@Setter
-@Entity
-@Table
+@Entity(name = "SECURITY_ROLE")
+@Table(name = "ROLE")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 class Role implements GrantedAuthority {
     @Id
-    @GeneratedValue
     Long id;
 
     String roleName;
