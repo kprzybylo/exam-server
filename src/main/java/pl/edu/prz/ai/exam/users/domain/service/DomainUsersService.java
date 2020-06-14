@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import pl.edu.prz.ai.exam.users.application.request.ApproveAccount;
+import pl.edu.prz.ai.exam.users.application.request.ChangeRole;
 import pl.edu.prz.ai.exam.users.application.request.CreateUser;
 import pl.edu.prz.ai.exam.users.application.response.UserAccount;
 import pl.edu.prz.ai.exam.users.domain.*;
@@ -38,7 +39,7 @@ public class DomainUsersService implements UsersService {
     }
 
     @Override
-    public void approveAccount(Long userId, ApproveAccount approveAccount) {
+    public void approveUserAccount(Long userId, ApproveAccount approveAccount) {
         Role newRole = roleRepository.findByRoleName(approveAccount.getNewRoleName())
                 .orElseThrow(CouldNotAssignRoleException::new);
 
@@ -47,6 +48,21 @@ public class DomainUsersService implements UsersService {
 
         User updatedUser = user.toBuilder()
                 .isNonLocked(true)
+                .role(newRole)
+                .build();
+
+        userRepository.save(updatedUser);
+    }
+
+    @Override
+    public void changeUserRole(Long userId, ChangeRole changeRole) {
+        Role newRole = roleRepository.findByRoleName(changeRole.getNewRoleName())
+                .orElseThrow(CouldNotAssignRoleException::new);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        User updatedUser = user.toBuilder()
                 .role(newRole)
                 .build();
 
