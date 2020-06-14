@@ -6,10 +6,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import pl.edu.prz.ai.exam.users.application.request.ApproveAccount;
 import pl.edu.prz.ai.exam.users.application.request.CreateUser;
 import pl.edu.prz.ai.exam.users.application.response.UserAccount;
 import pl.edu.prz.ai.exam.users.domain.service.UsersService;
@@ -28,5 +26,14 @@ public class UsersController {
     @PreAuthorize("isAnonymous()")
     public ResponseEntity<UserAccount> registerUser(@Valid @RequestBody CreateUser createUser) {
         return ResponseEntity.ok(usersService.registerUser(createUser));
+    }
+
+    @PostMapping("/{id}/approve")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<?> approveUserAccount(
+            @PathVariable("id") Long userId,
+            @Valid @RequestBody ApproveAccount approveAccount) {
+        usersService.approveAccount(userId, approveAccount);
+        return ResponseEntity.ok().build();
     }
 }
