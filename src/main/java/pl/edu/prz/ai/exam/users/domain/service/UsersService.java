@@ -11,4 +11,6 @@ public interface UsersService {
     void approveUserAccount(Long userId, ApproveAccount approveAccount);
 
     void changeUserRole(Long userId, ChangeRole changeRole);
+
+    void disableUserAccount(Long userId);
 }

@@ -68,4 +68,16 @@ public class DomainUsersService implements UsersService {
 
         userRepository.save(updatedUser);
     }
+
+    @Override
+    public void disableUserAccount(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserNotFoundException::new);
+
+        User updatedUser = user.toBuilder()
+                .isEnabled(false)
+                .build();
+
+        userRepository.save(updatedUser);
+    }
 }

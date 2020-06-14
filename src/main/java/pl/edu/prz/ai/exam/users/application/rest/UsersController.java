@@ -47,4 +47,11 @@ public class UsersController {
         usersService.changeUserRole(userId, changeRole);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/{id}/disable")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> disableUserAccount(@PathVariable("id") Long userId) {
+        usersService.disableUserAccount(userId);
+        return ResponseEntity.ok().build();
+    }
 }
