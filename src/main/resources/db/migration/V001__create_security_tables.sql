@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS ROLE (
-    ID bigserial not null primary key,
+    ID bigserial primary key,
     ROLE_NAME varchar(20) not null
 );
 
 CREATE TABLE IF NOT EXISTS APP_USER (
-    ID bigserial not null primary key,
+    ID bigserial primary key,
     FIRST_NAME varchar(30) not null,
     LAST_NAME varchar(30) not null,
     PASSWORD varchar(100) not null,
