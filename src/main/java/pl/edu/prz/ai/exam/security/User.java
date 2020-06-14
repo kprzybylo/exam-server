@@ -23,7 +23,7 @@ class User implements UserDetails {
     String email;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id", insertable = false, updatable = false)
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
     Role role;
 
     Date expirationDate;
