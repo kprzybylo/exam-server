@@ -6,21 +6,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Entity
-@Table
-public class Attachment {
+@Entity(name = "EXAM_USER")
+@Table(name = "APP_USER")
+public class User {
     @Id
     Long id;
-
-    @ManyToOne
-    @JoinColumn(name = "QUESTION_ID", referencedColumnName = "ID")
-    Question question;
-
-    String attachmentLocation;
+    String email;
 }

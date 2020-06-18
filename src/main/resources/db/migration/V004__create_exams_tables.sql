@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS USERS_ANSWERS (
     ANSWER_TIMESTAMP date not null,
     USER_ANSWER varchar(512),
     ANSWER_ID bigint references ANSWER(ID)
-)
+);
 
 CREATE TABLE IF NOT EXISTS ATTACHMENT (
     ID bigserial primary key,
