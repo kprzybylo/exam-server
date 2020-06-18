@@ -16,6 +16,7 @@ import javax.persistence.*;
 @Table
 public class Attachment {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @ManyToOne

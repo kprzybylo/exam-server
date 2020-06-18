@@ -10,7 +10,14 @@ public class ExamsConfiguration {
     @Bean
     public ExamsService examsService(
             SpringExamRepository springExamRepository,
+            SpringQuestionRepository springQuestionRepository,
+            SpringAnswerRepository springAnswerRepository,
             SpringExamUserRepository springExamUserRepository) {
-        return new DomainExamsService(springExamRepository, springExamUserRepository);
+        return new DomainExamsService(
+                springExamRepository,
+                springQuestionRepository,
+                springAnswerRepository,
+                springExamUserRepository
+        );
     }
 }

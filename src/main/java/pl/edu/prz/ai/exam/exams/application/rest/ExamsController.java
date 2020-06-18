@@ -7,10 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import pl.edu.prz.ai.exam.exams.application.request.CreateExam;
+import pl.edu.prz.ai.exam.exams.application.request.CreateQuestion;
 import pl.edu.prz.ai.exam.exams.application.response.CreatedExam;
 import pl.edu.prz.ai.exam.exams.domain.service.ExamsService;
 
@@ -27,5 +26,15 @@ public class ExamsController {
     @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<CreatedExam> createNewExam(@Valid @RequestBody CreateExam createExam) {
         return ResponseEntity.ok(examsService.createNewExam(createExam));
+    }
+
+    @PostMapping("/{examId}/questions")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<?> addQuestionToExam(
+            @PathVariable("examId") Long examId,
+            @Valid @RequestBody CreateQuestion createQuestion) {
+        examsService.addQuestionToExam(examId, createQuestion);
+
+        return ResponseEntity.ok().build();
     }
 }

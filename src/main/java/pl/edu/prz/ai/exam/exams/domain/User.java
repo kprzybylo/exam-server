@@ -1,9 +1,6 @@
 package pl.edu.prz.ai.exam.exams.domain;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.Entity;
@@ -14,6 +11,7 @@ import javax.persistence.Table;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@EqualsAndHashCode
 @Entity(name = "EXAM_USER")
 @Table(name = "APP_USER")
 public class User {
