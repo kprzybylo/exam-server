@@ -15,6 +15,19 @@ services:
     networks:
       - backend
 
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: exam_server
+    ports:
+      - "8080:8080"
+    restart: always
+    depends_on:
+      - db
+    networks:
+      - backend
+
 volumes:
   db-data:
 
