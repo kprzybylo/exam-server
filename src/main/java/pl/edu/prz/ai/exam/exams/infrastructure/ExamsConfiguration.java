@@ -12,12 +12,16 @@ public class ExamsConfiguration {
             SpringExamRepository springExamRepository,
             SpringQuestionRepository springQuestionRepository,
             SpringAnswerRepository springAnswerRepository,
-            SpringExamUserRepository springExamUserRepository) {
+            SpringExamUserRepository springExamUserRepository,
+            SpringExamsUsersRepository springExamsUsersRepository,
+            SpringGroupRepository springGroupRepository) {
         return new DomainExamsService(
                 springExamRepository,
                 springQuestionRepository,
                 springAnswerRepository,
-                springExamUserRepository
+                springExamUserRepository,
+                springExamsUsersRepository,
+                springGroupRepository
         );
     }
 }
