@@ -6,4 +6,6 @@ import java.util.Optional;
 
 public interface ExamUserRepository {
     Optional<User> findByEmail(String email);
+
+    Optional<User> findById(Long id);
 }
