@@ -1,46 +1,38 @@
 package pl.edu.prz.ai.exam.exams.domain.service;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.multipart.MultipartFile;
 import pl.edu.prz.ai.exam.exams.application.request.AssignGroup;
 import pl.edu.prz.ai.exam.exams.application.request.AssignUser;
 import pl.edu.prz.ai.exam.exams.application.request.CreateExam;
 import pl.edu.prz.ai.exam.exams.application.request.CreateQuestion;
 import pl.edu.prz.ai.exam.exams.application.response.CreatedExam;
 import pl.edu.prz.ai.exam.exams.domain.*;
-import pl.edu.prz.ai.exam.exams.domain.exception.*;
-import pl.edu.prz.ai.exam.exams.domain.repository.*;
+import pl.edu.prz.ai.exam.exams.domain.exception.ExamNotFoundException;
+import pl.edu.prz.ai.exam.exams.domain.exception.OperationNotAllowedException;
+import pl.edu.prz.ai.exam.exams.domain.repository.ExamRepository;
+import pl.edu.prz.ai.exam.exams.domain.repository.ExamsUsersRepository;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-@AllArgsConstructor(onConstructor = @__(@Autowired))
+@RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DomainExamsService implements ExamsService {
     ExamRepository examRepository;
-    QuestionRepository questionRepository;
-    AnswerRepository answerRepository;
-    ExamUserRepository examUserRepository;
     ExamsUsersRepository examsUsersRepository;
-    GroupRepository groupRepository;
+
+    AppUsersService appUsersService;
+    QuestionsService questionsService;
 
     ExamsMapper examsMapper = new ExamsMapper();
-    QuestionsMapper questionsMapper = new QuestionsMapper();
 
     @Override
     public CreatedExam createNewExam(CreateExam createExam) {
         Exam exam = examsMapper.toExam(createExam);
 
-
-        User creator = examUserRepository.findByEmail(getLoggedUserEmail())
-                .orElseThrow(CouldNotAcquireLoggedUserException::new);
-
         exam = exam.toBuilder()
-                .creator(creator)
+                .creator(appUsersService.getLoggedUser())
                 .build();
 
         examRepository.save(exam);
@@ -49,9 +41,8 @@ public class DomainExamsService implements ExamsService {
     }
 
     @Override
-    public void addQuestionToExam(Long examId, CreateQuestion createQuestion) {
-        User creator = examUserRepository.findByEmail(getLoggedUserEmail())
-                .orElseThrow(CouldNotAcquireLoggedUserException::new);
+    public Question addQuestionToExam(Long examId, CreateQuestion createQuestion) {
+        User creator = appUsersService.getLoggedUser();
 
         Exam exam = examRepository.findById(examId)
                 .orElseThrow(ExamNotFoundException::new);
@@ -60,30 +51,12 @@ public class DomainExamsService implements ExamsService {
             throw new OperationNotAllowedException();
         }
 
-        Question question = questionsMapper.toQuestion(createQuestion)
-                .toBuilder()
-                .exam(exam)
-                .build();
-
-        questionRepository.save(question);
-
-        if(!question.getIsOpenQuestion()) {
-            List<Answer> answers = createQuestion.getPossibleAnswers()
-                    .stream()
-                    .map(createAnswer -> Answer.builder()
-                            .answerText(createAnswer.getAnswerText())
-                            .isCorrectAnswer(createAnswer.getIsCorrectAnswer())
-                            .question(question)
-                            .build())
-                    .collect(Collectors.toList());
-            answers.forEach(answerRepository::save);
-        }
+        return questionsService.createQuestion(exam, createQuestion);
     }
 
     @Override
     public void assignGroupToExam(Long examId, AssignGroup assignGroup) {
-        Group group = groupRepository.findById(assignGroup.getGroupId())
-                .orElseThrow(GroupNotFoundException::new);
+        Group group = appUsersService.findGroup(assignGroup.getGroupId());
 
         Exam exam = examRepository.findById(examId)
                 .orElseThrow(ExamNotFoundException::new);
@@ -94,8 +67,7 @@ public class DomainExamsService implements ExamsService {
 
     @Override
     public void assignUserToExam(Long examId, AssignUser assignUser) {
-        User user = examUserRepository.findById(assignUser.getUserId())
-                .orElseThrow(UserNotFoundException::new);
+        User user = appUsersService.findUser(assignUser.getUserId());
 
         Exam exam = examRepository.findById(examId)
                 .orElseThrow(ExamNotFoundException::new);
@@ -103,16 +75,9 @@ public class DomainExamsService implements ExamsService {
         addUserToExam(user, exam);
     }
 
-    private String getLoggedUserEmail() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username;
-        if (principal instanceof UserDetails) {
-            username = ((UserDetails) principal).getUsername();
-        } else {
-            username = principal.toString();
-        }
-
-        return username;
+    @Override
+    public void addAttachmentToQuestion(Question question, MultipartFile file) {
+        questionsService.addAttachmentToExistingQuestion(question, file);
     }
 
     private void addUserToExam(User user, Exam exam) {

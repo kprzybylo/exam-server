@@ -4,7 +4,7 @@ import pl.edu.prz.ai.exam.exams.domain.User;
 
 import java.util.Optional;
 
-public interface ExamUserRepository {
+public interface AppUserRepository {
     Optional<User> findByEmail(String email);
 
     Optional<User> findById(Long id);
