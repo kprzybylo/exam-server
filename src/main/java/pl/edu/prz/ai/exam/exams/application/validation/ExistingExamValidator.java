@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import pl.edu.prz.ai.exam.exams.domain.exception.ExamNotFoundException;
 import pl.edu.prz.ai.exam.exams.domain.repository.ExamRepository;
 
 import javax.validation.ConstraintValidator;
@@ -16,6 +17,10 @@ public class ExistingExamValidator implements ConstraintValidator<ExistingExam, 
 
     @Override
     public boolean isValid(Long examId, ConstraintValidatorContext context) {
-        return examRepository.findById(examId).isPresent();
+        if(examRepository.findById(examId) == null) {
+            throw new ExamNotFoundException();
+        }
+
+        return true;
     }
 }
