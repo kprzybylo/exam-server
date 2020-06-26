@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Date;
 
 @Value
-public class CreateExam {
+public class ExamRequest {
     @NotNull @NotEmpty
     String examName;
 

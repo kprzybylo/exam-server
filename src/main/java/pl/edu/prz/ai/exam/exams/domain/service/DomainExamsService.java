@@ -7,11 +7,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.multipart.MultipartFile;
 import pl.edu.prz.ai.exam.exams.application.request.AssignGroup;
 import pl.edu.prz.ai.exam.exams.application.request.AssignUser;
-import pl.edu.prz.ai.exam.exams.application.request.CreateExam;
 import pl.edu.prz.ai.exam.exams.application.request.CreateQuestion;
-import pl.edu.prz.ai.exam.exams.application.response.CreatedExam;
+import pl.edu.prz.ai.exam.exams.application.request.ExamRequest;
+import pl.edu.prz.ai.exam.exams.application.response.ExamResponse;
 import pl.edu.prz.ai.exam.exams.domain.*;
-import pl.edu.prz.ai.exam.exams.domain.exception.ExamNotFoundException;
+import pl.edu.prz.ai.exam.exams.domain.exception.CannotChangeActiveExamException;
 import pl.edu.prz.ai.exam.exams.domain.exception.OperationNotAllowedException;
 import pl.edu.prz.ai.exam.exams.domain.repository.ExamRepository;
 import pl.edu.prz.ai.exam.exams.domain.repository.ExamsUsersRepository;
@@ -28,8 +28,8 @@ public class DomainExamsService implements ExamsService {
     ExamsMapper examsMapper = new ExamsMapper();
 
     @Override
-    public CreatedExam createNewExam(CreateExam createExam) {
-        Exam exam = examsMapper.toExam(createExam);
+    public ExamResponse createNewExam(ExamRequest examRequest) {
+        Exam exam = examsMapper.toExam(examRequest);
 
         exam = exam.toBuilder()
                 .creator(appUsersService.getLoggedUser())
@@ -41,11 +41,30 @@ public class DomainExamsService implements ExamsService {
     }
 
     @Override
+    public ExamResponse updateExistingExam(Long examId, ExamRequest examRequest) {
+        Exam exam = examRepository.findById(examId);
+
+        if (exam.getIsActive()) {
+            throw new CannotChangeActiveExamException();
+        }
+
+        exam = exam.toBuilder()
+                .examName(examRequest.getExamName())
+                .availableTime(examRequest.getAvailableTimeInMinutes())
+                .validFrom(examRequest.getAvailableFrom())
+                .validTo(examRequest.getAvailableTo())
+                .build();
+
+        examRepository.save(exam);
+
+        return examsMapper.toCreatedExam(exam);
+    }
+
+    @Override
     public Question addQuestionToExam(Long examId, CreateQuestion createQuestion) {
         User creator = appUsersService.getLoggedUser();
 
-        Exam exam = examRepository.findById(examId)
-                .orElseThrow(ExamNotFoundException::new);
+        Exam exam = examRepository.findById(examId);
 
         if (!exam.getCreator().equals(creator)) {
             throw new OperationNotAllowedException();
@@ -58,8 +77,7 @@ public class DomainExamsService implements ExamsService {
     public void assignGroupToExam(Long examId, AssignGroup assignGroup) {
         Group group = appUsersService.findGroup(assignGroup.getGroupId());
 
-        Exam exam = examRepository.findById(examId)
-                .orElseThrow(ExamNotFoundException::new);
+        Exam exam = examRepository.findById(examId);
 
         group.getStudents()
                 .forEach(user -> addUserToExam(user, exam));
@@ -69,8 +87,7 @@ public class DomainExamsService implements ExamsService {
     public void assignUserToExam(Long examId, AssignUser assignUser) {
         User user = appUsersService.findUser(assignUser.getUserId());
 
-        Exam exam = examRepository.findById(examId)
-                .orElseThrow(ExamNotFoundException::new);
+        Exam exam = examRepository.findById(examId);
 
         addUserToExam(user, exam);
     }

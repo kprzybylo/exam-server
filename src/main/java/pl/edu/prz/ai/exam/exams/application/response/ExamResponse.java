@@ -7,7 +7,7 @@ import java.util.Date;
 
 @Value
 @Builder
-public class CreatedExam {
+public class ExamResponse {
     Long id;
     String examName;
     Long availableTimeInMinutes;

@@ -21,3 +21,4 @@ app.config:
   jwt:
     secret: secret
     expirationTime: 86400000
+  attachments.directory: D:/Studia/AI
