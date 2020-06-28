@@ -9,14 +9,14 @@ import pl.edu.prz.ai.exam.exams.domain.service.*;
 public class ExamsConfiguration {
     @Bean
     public AppUsersService appUsersService(
-            AppUserRepository appUserRepository,
-            GroupRepository groupRepository) {
+            SpringAppUserRepository appUserRepository,
+            SpringGroupRepository groupRepository) {
         return new DomainAppUsersService(appUserRepository, groupRepository);
     }
     @Bean
     public ExamsService examsService(
-            ExamRepository examRepository,
-            ExamsUsersRepository examsUsersRepository,
+            SpringExamRepository examRepository,
+            SpringExamsUsersRepository examsUsersRepository,
             AppUsersService appUsersService,
             QuestionsService questionsService) {
         return new DomainExamsService(
@@ -29,9 +29,9 @@ public class ExamsConfiguration {
 
     @Bean
     public QuestionsService questionsService(
-            QuestionRepository questionRepository,
-            AnswerRepository answerRepository,
-            AttachmentRepository attachmentRepository) {
+            SpringQuestionRepository questionRepository,
+            SpringAnswerRepository answerRepository,
+            SpringAttachmentRepository attachmentRepository) {
         return new DomainQuestionsService(
                 questionRepository,
                 answerRepository,

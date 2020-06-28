@@ -6,7 +6,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 @Value
-public class CreateAnswer {
+public class AnswerRequest {
     @NotNull @NotEmpty
     String answerText;
 

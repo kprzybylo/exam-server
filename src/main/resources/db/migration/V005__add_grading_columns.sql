@@ -1,0 +1,5 @@
+ALTER TABLE USERS_ANSWERS
+    ADD COLUMN score numeric(3, 1);
+
+ALTER TABLE QUESTION
+    ADD COLUMN points integer;

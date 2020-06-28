@@ -20,4 +20,6 @@ public interface ExamsService {
     void addAttachmentToQuestion(Question question, MultipartFile file);
 
     ExamResponse updateExistingExam(Long examId, ExamRequest examRequest);
+
+    void checkIfUserIsOwner(Long examId);
 }

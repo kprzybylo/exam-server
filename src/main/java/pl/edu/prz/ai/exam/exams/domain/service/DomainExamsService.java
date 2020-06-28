@@ -62,15 +62,12 @@ public class DomainExamsService implements ExamsService {
 
     @Override
     public Question addQuestionToExam(Long examId, CreateQuestion createQuestion) {
-        User creator = appUsersService.getLoggedUser();
+        this.checkIfUserIsOwner(examId);
 
-        Exam exam = examRepository.findById(examId);
-
-        if (!exam.getCreator().equals(creator)) {
-            throw new OperationNotAllowedException();
-        }
-
-        return questionsService.createQuestion(exam, createQuestion);
+        return questionsService.createQuestion(
+                examRepository.findById(examId),
+                createQuestion
+        );
     }
 
     @Override
@@ -94,7 +91,7 @@ public class DomainExamsService implements ExamsService {
 
     @Override
     public void addAttachmentToQuestion(Question question, MultipartFile file) {
-        questionsService.addAttachmentToExistingQuestion(question, file);
+        questionsService.addAttachmentToQuestion(question, file);
     }
 
     private void addUserToExam(User user, Exam exam) {
@@ -104,5 +101,12 @@ public class DomainExamsService implements ExamsService {
                 .build();
 
         examsUsersRepository.save(examsUsers);
+    }
+
+    @Override
+    public void checkIfUserIsOwner(Long examId) {
+        if (!examRepository.findById(examId).getCreator().equals(appUsersService.getLoggedUser())) {
+            throw new OperationNotAllowedException();
+        }
     }
 }
