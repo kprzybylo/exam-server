@@ -13,5 +13,5 @@ public class CreateQuestion {
 
     Boolean isOpenQuestion;
 
-    List<CreateAnswer> possibleAnswers;
+    List<AnswerRequest> possibleAnswers;
 }
