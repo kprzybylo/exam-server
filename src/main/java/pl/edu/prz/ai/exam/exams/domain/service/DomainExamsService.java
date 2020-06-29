@@ -4,17 +4,18 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.multipart.MultipartFile;
-import pl.edu.prz.ai.exam.exams.application.request.AssignGroup;
-import pl.edu.prz.ai.exam.exams.application.request.AssignUser;
-import pl.edu.prz.ai.exam.exams.application.request.CreateQuestion;
-import pl.edu.prz.ai.exam.exams.application.request.ExamRequest;
+import pl.edu.prz.ai.exam.exams.application.request.*;
 import pl.edu.prz.ai.exam.exams.application.response.ExamResponse;
 import pl.edu.prz.ai.exam.exams.domain.*;
 import pl.edu.prz.ai.exam.exams.domain.exception.CannotChangeActiveExamException;
 import pl.edu.prz.ai.exam.exams.domain.exception.OperationNotAllowedException;
 import pl.edu.prz.ai.exam.exams.domain.repository.ExamRepository;
 import pl.edu.prz.ai.exam.exams.domain.repository.ExamsUsersRepository;
+
+import java.util.Calendar;
+import java.util.List;
 
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -108,5 +109,48 @@ public class DomainExamsService implements ExamsService {
         if (!examRepository.findById(examId).getCreator().equals(appUsersService.getLoggedUser())) {
             throw new OperationNotAllowedException();
         }
+    }
+
+    @Override
+    public void startExam(Long examId, StartExam startExam) {
+        checkIfUserIsOwner(examId);
+
+        Exam exam = examRepository.findById(examId);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR_OF_DAY, startExam.getAvailabilityInHours());
+
+        exam = exam.toBuilder()
+                .isActive(true)
+                .validTo(calendar.getTime())
+                .build();
+
+        examRepository.save(exam);
+    }
+
+    @Scheduled(fixedDelay = 60000)
+    public void startExams() {
+        List<Exam> examsToStart = examRepository.findAllNotStartedExams();
+
+        examsToStart.forEach(exam -> {
+            Exam startingExam = exam.toBuilder()
+                    .isActive(true)
+                    .build();
+
+            examRepository.save(startingExam);
+        });
+    }
+
+    @Scheduled(fixedDelay = 60000)
+    public void stopExams() {
+        List<Exam> examsToStop = examRepository.findAllExpiredExams();
+
+        examsToStop.forEach(exam -> {
+            Exam startingExam = exam.toBuilder()
+                    .isActive(false)
+                    .build();
+
+            examRepository.save(startingExam);
+        });
     }
 }
