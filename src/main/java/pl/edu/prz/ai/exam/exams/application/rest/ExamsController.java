@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.edu.prz.ai.exam.exams.application.request.AssignGroup;
 import pl.edu.prz.ai.exam.exams.application.request.AssignUser;
 import pl.edu.prz.ai.exam.exams.application.request.ExamRequest;
+import pl.edu.prz.ai.exam.exams.application.request.StartExam;
 import pl.edu.prz.ai.exam.exams.application.response.ExamResponse;
 import pl.edu.prz.ai.exam.exams.application.validation.ExistingExam;
 import pl.edu.prz.ai.exam.exams.domain.service.ExamsService;
@@ -57,6 +58,16 @@ public class ExamsController {
             @Valid @ExistingExam @PathVariable("examId") Long examId,
             @Valid @RequestBody AssignUser assignUser) {
         examsService.assignUserToExam(examId, assignUser);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{examId}/start")
+    @PreAuthorize("hasRole('TEACHER')")
+    public ResponseEntity<?> startExam(
+            @Valid @ExistingExam @PathVariable("examId") Long examId,
+            @Valid @RequestBody StartExam startExam) {
+        examsService.startExam(examId, startExam);
 
         return ResponseEntity.ok().build();
     }

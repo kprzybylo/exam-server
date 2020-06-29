@@ -1,10 +1,7 @@
 package pl.edu.prz.ai.exam.exams.domain.service;
 
 import org.springframework.web.multipart.MultipartFile;
-import pl.edu.prz.ai.exam.exams.application.request.AssignGroup;
-import pl.edu.prz.ai.exam.exams.application.request.AssignUser;
-import pl.edu.prz.ai.exam.exams.application.request.ExamRequest;
-import pl.edu.prz.ai.exam.exams.application.request.CreateQuestion;
+import pl.edu.prz.ai.exam.exams.application.request.*;
 import pl.edu.prz.ai.exam.exams.application.response.ExamResponse;
 import pl.edu.prz.ai.exam.exams.domain.Question;
 
@@ -22,4 +19,6 @@ public interface ExamsService {
     ExamResponse updateExistingExam(Long examId, ExamRequest examRequest);
 
     void checkIfUserIsOwner(Long examId);
+
+    void startExam(Long examId, StartExam startExam);
 }
