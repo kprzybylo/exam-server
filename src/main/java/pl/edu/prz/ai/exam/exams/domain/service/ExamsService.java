@@ -2,8 +2,11 @@ package pl.edu.prz.ai.exam.exams.domain.service;
 
 import org.springframework.web.multipart.MultipartFile;
 import pl.edu.prz.ai.exam.exams.application.request.*;
+import pl.edu.prz.ai.exam.exams.application.response.ExamQuestion;
 import pl.edu.prz.ai.exam.exams.application.response.ExamResponse;
 import pl.edu.prz.ai.exam.exams.domain.Question;
+
+import java.util.List;
 
 public interface ExamsService {
     ExamResponse createNewExam(ExamRequest examRequest);
@@ -20,5 +23,7 @@ public interface ExamsService {
 
     void checkIfUserIsOwner(Long examId);
 
-    void startExam(Long examId, StartExam startExam);
+    void activateExam(Long examId, ActivateExam activateExam);
+
+    List<ExamQuestion> startSolvingExam(Long examId);
 }

@@ -1,0 +1,879 @@
+{
+	"info": {
+		"_postman_id": "9367e467-ce04-482f-a1f2-df3a65cbfa03",
+		"name": "exam",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "975cf0fb-15b5-4b24-a354-e74135ed19e5",
+						"exec": [
+							"var data = JSON.parse(responseBody);\r",
+							"pm.environment.set(\"authToken\", data.token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"jkowalski@test.pl\",\r\n    \"password\": \"jkowalski\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/login",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Register",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"test4@test.pl\",\r\n    \"firstName\": \"Test2\",\r\n    \"lastName\": \"Testowy2\",\r\n    \"password\": \"test2\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/users",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Approve account",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"newRoleName\": \"TEACHER\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/users/9/approve",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"users",
+						"9",
+						"approve"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Change role",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"newRoleName\": \"STUDENT\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/users/9/changeRole",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"users",
+						"9",
+						"changeRole"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Disable account",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{apiUrl}}/users/9/disable",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"users",
+						"9",
+						"disable"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create group",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"groupName\": \"Test2\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/groups",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"groups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add user to group",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/groups/1/addUser",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"groups",
+						"1",
+						"addUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove user from group",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": \"1\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/groups/4/removeUser",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"groups",
+						"4",
+						"removeUser"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create exam",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"examName\": \"Test\",\r\n    \"availableTimeInMinutes\": 15,\r\n    \"availableFrom\": \"2020-06-19\",\r\n    \"availableTo\": \"2020-06-20\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/exams",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"exams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Activate exam",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"availabilityInHours\": 48\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/exams/1/activate",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"exams",
+						"1",
+						"activate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Start solving exam",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{apiUrl}}/exams/1/start",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"exams",
+						"1",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Submit answer to question",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"answerId\": 1\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/exams/1/questions/1/submitAnswer",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"exams",
+						"1",
+						"questions",
+						"1",
+						"submitAnswer"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit exam",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"examName\": \"Test 2\",\r\n    \"availableTimeInMinutes\": 15,\r\n    \"availableFrom\": \"2020-06-19\",\r\n    \"availableTo\": \"2020-06-20\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/exams/2",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"exams",
+						"2"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add question",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/Kamil/Pictures/lewy.jpg"
+						},
+						{
+							"key": "createQuestion",
+							"value": "{\"question\": \"Will it work?\", \"isOpenQuestion\": false, \"possibleAnswers\": [{\"answerText\": \"No\",\"isCorrectAnswer\": false},{\"answerText\": \"Yes\",\"isCorrectAnswer\": true}]}",
+							"type": "text"
+						},
+						{
+							"key": "isOpenQuestion",
+							"value": "false",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "possibleAnswers",
+							"value": "{\"answerText\": \"No\",\"isCorrectAnswer\": false}",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "possibleAnswers",
+							"value": "{\"answerText\": \"Yes\",\"isCorrectAnswer\": true}",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/exams/1/questions",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"exams",
+						"1",
+						"questions"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add attachment to question",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/C:/Users/Kamil/Pictures/lewy.jpg"
+						},
+						{
+							"key": "createQuestion",
+							"value": "{\"question\": \"Will it work?\", \"isOpenQuestion\": false, \"possibleAnswers\": [{\"answerText\": \"No\",\"isCorrectAnswer\": false},{\"answerText\": \"Yes\",\"isCorrectAnswer\": true}]}",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "isOpenQuestion",
+							"value": "false",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "possibleAnswers",
+							"value": "{\"answerText\": \"No\",\"isCorrectAnswer\": false}",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "possibleAnswers",
+							"value": "{\"answerText\": \"Yes\",\"isCorrectAnswer\": true}",
+							"type": "text",
+							"disabled": true
+						},
+						{
+							"key": "",
+							"value": "",
+							"type": "text",
+							"disabled": true
+						}
+					],
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/exams/1/questions/8/attachments",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"exams",
+						"1",
+						"questions",
+						"8",
+						"attachments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "remove attachment from question",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{apiUrl}}/exams/1/questions/8/attachments",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"exams",
+						"1",
+						"questions",
+						"8",
+						"attachments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "add answer to question",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"answerText\": \"Test\",\r\n    \"isCorrectAnswer\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/exams/1/questions/8/answers",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"exams",
+						"1",
+						"questions",
+						"8",
+						"answers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit answer of question",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"answerText\": \"Testy\",\r\n    \"isCorrectAnswer\": false\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/exams/1/questions/8/answers/1",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"exams",
+						"1",
+						"questions",
+						"8",
+						"answers",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "edit answer of question Copy",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{apiUrl}}/exams/1/questions/8/answers/1",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"exams",
+						"1",
+						"questions",
+						"8",
+						"answers",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "assign group to exam",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"groupId\": \"1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/exams/1/groups",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"exams",
+						"1",
+						"groups"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "assign user to exam",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{authToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"userId\": 2\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiUrl}}/exams/1/users",
+					"host": [
+						"{{apiUrl}}"
+					],
+					"path": [
+						"exams",
+						"1",
+						"users"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "febfbd36-2a31-4d93-b3fb-ec75d7e1d0d6",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "692bfae6-d63c-4b00-8fe8-635b4f52411a",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "924ab8dc-d768-49b5-ba07-8808bef2cec9",
+			"key": "apiUrl",
+			"value": "http://localhost:8080/api"
+		},
+		{
+			"id": "8c363566-5902-4ad8-a47b-459ee81a9e3a",
+			"key": "authToken",
+			"value": "",
+			"disabled": true
+		}
+	],
+	"protocolProfileBehavior": {}
+}

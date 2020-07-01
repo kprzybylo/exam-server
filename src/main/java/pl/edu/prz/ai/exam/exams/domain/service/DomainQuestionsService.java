@@ -9,32 +9,38 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.multipart.MultipartFile;
 import pl.edu.prz.ai.exam.exams.application.request.AnswerRequest;
 import pl.edu.prz.ai.exam.exams.application.request.CreateQuestion;
-import pl.edu.prz.ai.exam.exams.domain.Answer;
-import pl.edu.prz.ai.exam.exams.domain.Attachment;
-import pl.edu.prz.ai.exam.exams.domain.Exam;
-import pl.edu.prz.ai.exam.exams.domain.Question;
+import pl.edu.prz.ai.exam.exams.application.request.SubmitAnswer;
+import pl.edu.prz.ai.exam.exams.application.response.ExamQuestion;
+import pl.edu.prz.ai.exam.exams.domain.*;
+import pl.edu.prz.ai.exam.exams.domain.exception.AnswerNotFoundException;
 import pl.edu.prz.ai.exam.exams.domain.exception.InconsistentDataProvidedException;
+import pl.edu.prz.ai.exam.exams.domain.exception.MissingAnswerToSaveException;
 import pl.edu.prz.ai.exam.exams.domain.exception.SavingAttachmentFailedException;
 import pl.edu.prz.ai.exam.exams.domain.repository.AnswerRepository;
 import pl.edu.prz.ai.exam.exams.domain.repository.AttachmentRepository;
 import pl.edu.prz.ai.exam.exams.domain.repository.QuestionRepository;
+import pl.edu.prz.ai.exam.exams.domain.repository.UsersAnswersRepository;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class DomainQuestionsService implements QuestionsService {
     @Value("${app.config.attachments.directory}")
-    @NonFinal String attachmentsDirectory;
+    @NonFinal
+    String attachmentsDirectory;
 
     QuestionRepository questionRepository;
     AnswerRepository answerRepository;
     AttachmentRepository attachmentRepository;
+    UsersAnswersRepository usersAnswersRepository;
 
     QuestionsMapper questionsMapper = new QuestionsMapper();
 
@@ -139,6 +145,81 @@ public class DomainQuestionsService implements QuestionsService {
         if (!question.getExam().getId().equals(examId)) {
             throw new InconsistentDataProvidedException();
         }
+    }
+
+    @Override
+    public List<ExamQuestion> findQuestionsAndAnswersOfExam(Long examId) {
+        List<Question> questions = questionRepository.findAllByExam_Id(examId);
+
+        return questions.stream()
+                .map(question -> {
+                    List<Answer> questionAnswers = answerRepository.findAllByQuestion_Id(question.getId());
+                    Optional<Attachment> attachment = Optional.ofNullable(
+                            attachmentRepository.findByQuestion_Id(question.getId())
+                    );
+
+                    return ExamQuestion.builder()
+                            .attachmentUrl(attachment.map(Attachment::getAttachmentLocation).orElse(null))
+                            .possibleAnswers(
+                                    questionAnswers.stream()
+                                            .map(Answer::getAnswerText)
+                                            .collect(Collectors.toList())
+                            ).question(question.getQuestion())
+                            .questionId(question.getId())
+                            .build();
+                }).collect(Collectors.toList());
+    }
+
+    @Override
+    public void submitAnswerToQuestion(
+            Long examId, Long questionId,
+            User loggedUser, SubmitAnswer submitAnswer) {
+        checkIfQuestionBelongsToExam(examId, questionId);
+
+        Question question = questionRepository.findById(questionId);
+
+        if (submitAnswer.getAnswerText().isEmpty() && submitAnswer.getAnswerId() == null) {
+            throw new MissingAnswerToSaveException();
+        }
+
+        UsersAnswers usersAnswers;
+        if (question.getIsOpenQuestion()) {
+            Optional<UsersAnswers> userAnswer = usersAnswersRepository
+                    .findByQuestion_IdAndUser_Id(questionId, loggedUser.getId());
+
+            usersAnswers = userAnswer.map(a -> a.toBuilder()
+                    .userAnswer(submitAnswer.getAnswerText())
+                    .answerTimestamp(new Timestamp(System.currentTimeMillis()))
+                    .build()
+            ).orElse(UsersAnswers.builder()
+                    .userAnswer(submitAnswer.getAnswerText())
+                    .answerTimestamp(new Timestamp(System.currentTimeMillis()))
+                    .question(question)
+                    .user(loggedUser)
+                    .build()
+            );
+        } else {
+            Answer answer = answerRepository.findById(submitAnswer.getAnswerId());
+            if (answer == null) {
+                throw new AnswerNotFoundException();
+            }
+
+            Optional<UsersAnswers> userAnswer = usersAnswersRepository
+                    .findByQuestion_IdAndUser_Id(questionId, loggedUser.getId());
+
+            usersAnswers = userAnswer.map(a -> a.toBuilder()
+                    .answerTimestamp(new Timestamp(System.currentTimeMillis()))
+                    .answer(answer)
+                    .build()
+            ).orElse(UsersAnswers.builder()
+                    .answerTimestamp(new Timestamp(System.currentTimeMillis()))
+                    .question(question)
+                    .user(loggedUser)
+                    .build()
+            );
+        }
+
+        usersAnswersRepository.save(usersAnswers);
     }
 
     private void saveQuestionAnswers(Question question, List<AnswerRequest> possibleAnswers) {

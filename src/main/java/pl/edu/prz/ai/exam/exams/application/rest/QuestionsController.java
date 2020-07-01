@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import pl.edu.prz.ai.exam.exams.application.request.AnswerRequest;
 import pl.edu.prz.ai.exam.exams.application.request.CreateQuestion;
+import pl.edu.prz.ai.exam.exams.application.request.SubmitAnswer;
 import pl.edu.prz.ai.exam.exams.application.validation.ExistingAnswer;
 import pl.edu.prz.ai.exam.exams.application.validation.ExistingExam;
 import pl.edu.prz.ai.exam.exams.application.validation.ExistingQuestion;
 import pl.edu.prz.ai.exam.exams.domain.Question;
+import pl.edu.prz.ai.exam.exams.domain.service.AppUsersService;
 import pl.edu.prz.ai.exam.exams.domain.service.ExamsService;
 import pl.edu.prz.ai.exam.exams.domain.service.QuestionsService;
 
@@ -31,6 +33,7 @@ import javax.validation.Valid;
 public class QuestionsController {
     ExamsService examsService;
     QuestionsService questionsService;
+    AppUsersService appUsersService;
     ObjectMapper objectMapper;
 
     @PostMapping(consumes = {"multipart/form-data"})
@@ -109,6 +112,20 @@ public class QuestionsController {
         examsService.checkIfUserIsOwner(examId);
 
         questionsService.deleteAnswerFromQuestion(examId, questionId, answerId);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{questionId}/submitAnswer")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<?> submitAnswerToQuestion(
+            @Valid @ExistingExam @PathVariable("examId") Long examId,
+            @Valid @ExistingQuestion @PathVariable("questionId") Long questionId,
+            @Valid @RequestBody SubmitAnswer submitAnswer) {
+        questionsService.submitAnswerToQuestion(
+                examId, questionId,
+                appUsersService.getLoggedUser(),
+                submitAnswer);
 
         return ResponseEntity.ok().build();
     }

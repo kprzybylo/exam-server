@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import pl.edu.prz.ai.exam.exams.application.request.AssignGroup;
 import pl.edu.prz.ai.exam.exams.application.request.AssignUser;
 import pl.edu.prz.ai.exam.exams.application.request.ExamRequest;
-import pl.edu.prz.ai.exam.exams.application.request.StartExam;
+import pl.edu.prz.ai.exam.exams.application.request.ActivateExam;
 import pl.edu.prz.ai.exam.exams.application.response.ExamResponse;
 import pl.edu.prz.ai.exam.exams.application.validation.ExistingExam;
 import pl.edu.prz.ai.exam.exams.domain.service.ExamsService;
@@ -62,13 +62,19 @@ public class ExamsController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/{examId}/start")
+    @PostMapping("/{examId}/activate")
     @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<?> startExam(
+    public ResponseEntity<?> activateExam(
             @Valid @ExistingExam @PathVariable("examId") Long examId,
-            @Valid @RequestBody StartExam startExam) {
-        examsService.startExam(examId, startExam);
+            @Valid @RequestBody ActivateExam activateExam) {
+        examsService.activateExam(examId, activateExam);
 
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{examId}/start")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<?> startSolvingExam(@Valid @ExistingExam @PathVariable("examId") Long examId) {
+        return ResponseEntity.ok(examsService.startSolvingExam(examId));
     }
 }

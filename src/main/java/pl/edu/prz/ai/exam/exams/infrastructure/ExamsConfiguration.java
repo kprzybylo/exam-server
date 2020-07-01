@@ -31,11 +31,13 @@ public class ExamsConfiguration {
     public QuestionsService questionsService(
             SpringQuestionRepository questionRepository,
             SpringAnswerRepository answerRepository,
-            SpringAttachmentRepository attachmentRepository) {
+            SpringAttachmentRepository attachmentRepository,
+            SpringUsersAnswersRepository springUsersAnswersRepository) {
         return new DomainQuestionsService(
                 questionRepository,
                 answerRepository,
-                attachmentRepository
+                attachmentRepository,
+                springUsersAnswersRepository
         );
     }
 }
