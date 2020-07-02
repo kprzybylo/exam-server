@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
 
 @Value
 @NoArgsConstructor
-public class StartExam {
+public class ActivateExam {
     @NotNull @NonFinal
     Integer availabilityInHours;
 }

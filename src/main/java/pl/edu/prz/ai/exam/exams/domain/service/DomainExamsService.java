@@ -7,13 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.multipart.MultipartFile;
 import pl.edu.prz.ai.exam.exams.application.request.*;
+import pl.edu.prz.ai.exam.exams.application.response.ExamQuestion;
 import pl.edu.prz.ai.exam.exams.application.response.ExamResponse;
 import pl.edu.prz.ai.exam.exams.domain.*;
 import pl.edu.prz.ai.exam.exams.domain.exception.CannotChangeActiveExamException;
+import pl.edu.prz.ai.exam.exams.domain.exception.ExamAlreadyStartedException;
 import pl.edu.prz.ai.exam.exams.domain.exception.OperationNotAllowedException;
+import pl.edu.prz.ai.exam.exams.domain.exception.UserNotAssignedToGivenExamException;
 import pl.edu.prz.ai.exam.exams.domain.repository.ExamRepository;
 import pl.edu.prz.ai.exam.exams.domain.repository.ExamsUsersRepository;
 
+import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.List;
 
@@ -112,13 +116,13 @@ public class DomainExamsService implements ExamsService {
     }
 
     @Override
-    public void startExam(Long examId, StartExam startExam) {
+    public void activateExam(Long examId, ActivateExam activateExam) {
         checkIfUserIsOwner(examId);
 
         Exam exam = examRepository.findById(examId);
 
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.HOUR_OF_DAY, startExam.getAvailabilityInHours());
+        calendar.add(Calendar.HOUR_OF_DAY, activateExam.getAvailabilityInHours());
 
         exam = exam.toBuilder()
                 .isActive(true)
@@ -126,6 +130,25 @@ public class DomainExamsService implements ExamsService {
                 .build();
 
         examRepository.save(exam);
+    }
+
+    @Override
+    public List<ExamQuestion> startSolvingExam(Long examId) {
+        User loggedUser = appUsersService.getLoggedUser();
+        ExamsUsers examsUsers = examsUsersRepository.findByExam_IdAndUser_Id(examId, loggedUser.getId())
+                .orElseThrow(UserNotAssignedToGivenExamException::new);
+
+        if (examsUsers.getBeginTimestamp() != null) {
+            throw new ExamAlreadyStartedException();
+        }
+
+        examsUsers = examsUsers.toBuilder()
+                .beginTimestamp(new Timestamp(System.currentTimeMillis()))
+                .build();
+
+        examsUsersRepository.save(examsUsers);
+
+        return questionsService.findQuestionsAndAnswersOfExam(examId);
     }
 
     @Scheduled(fixedDelay = 60000)
